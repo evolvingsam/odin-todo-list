@@ -1,4 +1,4 @@
-export default class todo {
+export default class Task {
         description = null;
         dueDate = null;
         priority = null;
