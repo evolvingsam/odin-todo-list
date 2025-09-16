@@ -1,7 +1,7 @@
 import Task from "./task";
 import Project from "./project";
 
-export default class TodoManager {
+export default class TaskManager {
     #projects = {};
     #projectCount = 0;
     #taskCount = 0;
@@ -65,18 +65,49 @@ export default class TodoManager {
         this.#projects[this.#projectCount++] = project;
         return this.#projectCount - 1;
     }
-    getProject(id) {
-        let project = this.#projects[id];
+    getProject(projectId) {
+        let project = this.#projects[projectId];
         return { ...project };
     }
-    editProject(id, title) {
-        let project = this.#projects[id];
+    editProject(projectId, title) {
+        let project = this.#projects[projectId];
         if (title !== null) project.title = title;
     }
-    removeProject(id) {
-        delete this.#projects[id];
+    removeProject(projectId) {
+        delete this.#projects[projectId];
     }
     getProjects() {
-        return this.#projects;
+        return { ...this.#projects };
+    }
+
+    getProjectTasks(projectId) {
+        let project = this.#projects[projectId];
+        return { ...project.getTasks() };
+    }
+
+    getAllTasks() {
+        let allTasks = {};
+        for (let projectId in this.#projects) {
+            let project = this.#projects[projectId];
+            let tasks = project.getTasks();
+            for (let taskId in tasks) {
+                allTasks[`${projectId}-${taskId}`] = tasks[taskId];
+            }
+        }
+        return allTasks;
+    }
+    
+    getCompletedTasks() {
+        const completedTasks = {};
+        Object.entries(this.#projects).forEach(([projectId, project]) => {
+            const tasks = project.getTasks();
+            Object.entries(tasks).forEach(([taskId, task]) => {
+            if (task.completed) {
+                completedTasks[`${projectId}-${taskId}`] = { ...task };
+            }
+            });
+        });
+        
+        return completedTasks;
     }
 }
